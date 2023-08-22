@@ -1,0 +1,234 @@
+package crud_APP_JDBC;
+
+import java.io.*;
+import java.sql.*;
+import java.util.Scanner;
+public class CRUD_APP_Operation {
+
+	public static void main(String[] args) {
+		
+		Scanner scan = new Scanner(System.in);
+		
+		try
+		{				
+			String yn;
+			
+			//Load the Driver and Establish the Connection
+			
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/CRUD_APP", "root", "1234");
+
+			
+			do{
+				System.out.println("\nEnter the Number to perform CRUD API...\n");
+//				number should be less or equal to 5 and greater than 0
+				int n = scan.nextInt();
+					
+				switch(n)
+				{		
+				
+				case 0 : n=0;
+					System.out.println("Thanks for choosing Select All Operation...\n");
+					
+//					Select All Query
+//					String selectAllQuery = "Select T_Name, T_City, T_Age, T_Branch from CRUD_TAB1";
+					String selectAllQuery = "Select * from CRUD_TAB1";
+					
+					PreparedStatement pstmt = con.prepareStatement(selectAllQuery);
+					
+					if(pstmt != null) {
+						ResultSet rs = pstmt.executeQuery();
+						
+						System.out.println("\nT_ID\tT_Name\t\t T_City\t T_Age\t T_Branch\n");
+						
+						while(rs.next())
+						{
+							int ID = rs.getInt(1);
+							String Name = rs.getString(2);
+							String City = rs.getString(3);
+							int Age = rs.getInt(4);
+							String Branch = rs.getString(5);
+							
+							System.out.println(ID +"\t"+Name+"\t\t"+ City+"\t"+Age+"\t"+Branch);
+						}
+						System.out.println("\nThis is your Final...");
+					}
+					pstmt.close();
+				
+				break;
+				case 1 : n=1;
+					System.out.println("Thanks for choosing Insert Opearation...\n");
+					
+				//Query
+					String InsertQuery = "Insert into CRUD_TAB1(`T_Name`,`T_City`,`T_Age`,`T_Branch`) Values(?,?,?,?)";
+					PreparedStatement pstmt1 = con.prepareStatement(InsertQuery);
+					
+					if(pstmt1 != null)
+					{
+						System.out.println("Enter the Name :: ");
+						String Name = scan.next();
+						
+						System.out.println("Enter the City :: ");
+						String City = scan.next();
+						
+						System.out.println("Enter the Age :: ");
+						int Age = scan.nextInt();
+						
+						System.out.println("Enter the Branch :: ");
+						String Branch = scan.next();
+						
+//						Set the Valus 
+						
+						pstmt1.setString(1, Name);
+						pstmt1.setString(2, City);
+						pstmt1.setInt(3, Age);
+						pstmt1.setString(4, Branch);
+						
+						System.out.println("Record Inserted Successfully....");
+						
+						pstmt1.executeUpdate();
+						
+					}
+					else {
+						System.out.println("Record Insertion Failed....");
+					}
+
+					pstmt1.close();
+//					con.close();
+						
+				break;
+				
+				case 2 : n=2;
+				System.out.println("Thanks for choosing Select Opearation...\n");
+				
+//				Select Query 
+				
+				String SelectQuery = "Select T_Name, T_City, T_Age, T_Branch from CRUD_TAB1 WHERE T_ID = ?";
+				PreparedStatement pstmt2 = con.prepareStatement(SelectQuery);
+				
+				
+				if(pstmt2 != null) {
+					System.out.println("Enter the T_ID you want to visit :: ");
+					int ID = scan.nextInt();
+					
+					pstmt2.setInt(1, ID);
+					
+//					pstmt2.executeUpdate();
+					ResultSet rs = pstmt2.executeQuery();
+					
+					System.out.println("\nT_Name\t T_City\t T_Age\t T_Branch\n");
+					
+					while(rs.next()) {
+						
+						String Name = rs.getString(1);
+						String City = rs.getString(2);
+						int Age = rs.getInt(3);
+						String Branch = rs.getString(4);
+						
+						System.out.println(Name+"\t"+ City+"\t"+Age+"\t"+Branch);
+					}
+					
+					System.out.println("\nThis is the Info...");
+					
+					pstmt2.close();
+//					con.close();
+					
+				}
+				
+				
+				break;
+					
+				case 3 : n=3;
+				System.out.println("Thanks for choosing Update Opearation...\n");
+				
+//				Update Query 
+				
+				String UpdateQuery = "Update CRUD_TAB1 set T_Name = ?, T_City = ?, T_Age = ? , T_Branch = ? WHERE T_ID =?";
+				
+				PreparedStatement pstmt3 = con.prepareStatement(UpdateQuery);
+				
+				if(pstmt3 != null) {
+					
+					System.out.println("Enter new Name :: ");
+					String Name = scan.next();
+					
+					System.out.println("Enter new City :: ");
+					String City = scan.next();
+					
+					System.out.println("Enter new Age :: ");
+					int Age = scan.nextInt();
+					
+					System.out.println("Enter new Branch :: ");
+					String Branch = scan.next();
+					
+					System.out.println("Enter the ID Where you want to change :: ");
+					int ID = scan.nextInt();
+					
+//					Set the Values
+					
+					pstmt3.setString(1, Name);
+					pstmt3.setString(2, City);
+					pstmt3.setInt(3, Age);
+					pstmt3.setString(4, Branch);
+					pstmt3.setInt(5, ID);
+					
+					System.out.println("Updation is successfull..");
+					
+					pstmt3.executeUpdate();
+					
+					pstmt3.close();
+					
+				}
+				else {
+					System.out.println("Updation is Failed...");
+				}
+				
+				break;
+					
+				case 4 : n=4;
+				System.out.println("Thanks for choosing Delete Opearation...\n");
+				
+//				Delete Query
+				String DeleteQuery = "delete from CRUD_Tab1 where T_ID = ?";
+				PreparedStatement pstmt4 = con.prepareStatement(DeleteQuery);
+				
+				System.out.println("Enter the ID you want to delete from the Table :: ");
+				int ID = scan.nextInt();
+				
+				pstmt4.setInt(1, ID);
+				
+				pstmt4.executeUpdate();
+				
+				System.out.println("You have Successfully Deleted Row");
+				
+				pstmt4.close();
+				
+				break;
+					
+				case 5 : n=5;
+				System.out.println("Thanks for choosing CRUD Opearation...\nHave Nice Day please come Again...\n");
+				break;
+					
+				default :
+				System.out.println("Hey! You have Entered a Wrong Number\nMake sure it's Correct");
+				}
+					
+				System.out.println("\nDo you want to continue -> PRESS Y for 'Yes' and N for 'No'");
+				yn = scan.next();
+			}
+				
+			while(yn.equals("y") || yn.equals("Y"));
+			
+			System.out.println("Thanks! Have a Nice pal...Come again...");
+			con.close();
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+	}
+
+
+}
